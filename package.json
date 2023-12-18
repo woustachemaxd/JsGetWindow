@@ -1,6 +1,6 @@
 {
   "name": "jsgetwindow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a cross platform module to obtain GUI information and controlling application's windows (inspired from PyGetWindow)",
   "main": "main.js",
   "scripts": {
