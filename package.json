@@ -6,6 +6,15 @@
   "scripts": {
     "test": "jest"
   },
+  "keywords": [
+    "Cross-platform module",
+    "GUI information",
+    "Window control",
+    "pyGetWindow module",
+    "Development in progress",
+    "Windows platform",
+    "Application windows"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/woustachemaxd/JsGetWindow.git"
