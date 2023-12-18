@@ -10,124 +10,6 @@ const SW_RESTORE = 9;
 const HWND_TOP = 0;
 const WM_CLOSE = 0x0010;
 
-// Define a library object for user32.dll functions using ffi.
-const user32 = ffi.Library("user32", {
-  EnumWindows: ["bool", ["pointer", "int32"]],
-  GetWindowTextW: ["int", ["int", "string", "int"]],
-  GetWindowTextLengthW: ["int", ["int"]],
-  IsWindowVisible: ["bool", ["int"]],
-  GetForegroundWindow: ["long", []],
-  GetCursorPos: ["bool", ["pointer"]],
-  FindWindowW: ["long", ["string"]],
-  GetWindowRect: ["bool", ["long", "void*"]],
-  SendMessageA: ["long", ["long", "uint", "long", "long"]],
-  ShowWindow: ["bool", ["long", "int"]],
-  SetForegroundWindow: ["bool", ["long"]],
-  SetWindowPos: ["bool", ["long", "long", "int", "int", "int", "int", "uint"]],
-  IsZoomed: ["bool", ["long"]],
-  IsIconic: ["bool", ["long"]],
-});
-
-// Function to retrieve titles of all visible windows.
-function getAllTitles() {
-  let titles = [];
-  const enumWindowsCallback = ffi.Callback(
-    "bool",
-    ["long", "long"],
-    function (hWnd, lParam) {
-      if (user32.IsWindowVisible(hWnd)) {
-        titles.push(getWindowName(hWnd));
-      }
-      return true;
-    }
-  );
-  user32.EnumWindows(enumWindowsCallback, 0);
-  return titles;
-}
-
-// Function to retrieve the title of the currently active window.
-function getActiveWindowTitle() {
-  const activeWindow = getActiveWindowHWnd();
-  if (activeWindow === 0) return "No active window";
-  return getWindowName(activeWindow);
-}
-
-//Function to retrieve the position of the cursor.
-function getCursorPosition() {
-  const pointBuffer = Buffer.alloc(8);
-  if (user32.GetCursorPos(pointBuffer)) {
-    const x = pointBuffer.readInt32LE(0);
-    const y = pointBuffer.readInt32LE(4);
-    return { x, y: y };
-  } else {
-    return null;
-  }
-}
-
-// Function to retrieve delails of all visible windows.
-function getAllWindows() {
-  const windows = new Array(); // Use a fixed-size array
-  let index = 0;
-
-  const enumWindowsCallback = ffi.Callback(
-    "bool",
-    ["long", "long"],
-    function (hWnd, lParam) {
-      if (user32.IsWindowVisible(hWnd)) {
-        windows[index++] = new BaseWindow(
-          getWindowName(hWnd),
-          getRect(hWnd),
-          hWnd
-        );
-      }
-      return true;
-    },
-    "stdcall"
-  );
-
-  user32.EnumWindows(enumWindowsCallback, 0);
-  return windows;
-}
-
-// Function to retrieve the details of the currently active window.
-function getActiveWindow() {
-  const activeWindow = getActiveWindowHWnd();
-  if (activeWindow === 0) return "No active window";
-  return new BaseWindow(
-    getWindowName(activeWindow),
-    getRect(activeWindow),
-    activeWindow
-  );
-}
-
-// Function to retrieve the details of the window which are at the given x,y coordinates.
-function getWindowsAt(x, y) {
-  let windowsAtXY = [];
-  for (let window of getAllWindows()) {
-    if (checkIfInBounds(x, y, window.rect)) {
-      windowsAtXY.push(window);
-    }
-  }
-  return windowsAtXY;
-}
-
-// Function to retrieve the details of windows which have the given input as part of their name.
-function getWindowsWithTitle(inputTitle) {
-  let windows = getAllWindows();
-  let windowsWithTitle = [];
-  for (let window of windows) {
-    if (
-      window.title
-        .trim()
-        .toLowerCase()
-        .includes(inputTitle.trim().toLowerCase())
-    ) {
-      windowsWithTitle.push(window);
-    }
-  }
-  return windowsWithTitle;
-}
-
 //baseWindow class definition
 /**
  * Represents a base window with common window operations.
@@ -267,6 +149,125 @@ class Rect {
   }
 }
 
+// Define a library object for user32.dll functions using ffi.
+const user32 = ffi.Library("user32", {
+  EnumWindows: ["bool", ["pointer", "int32"]],
+  GetWindowTextW: ["int", ["int", "string", "int"]],
+  GetWindowTextLengthW: ["int", ["int"]],
+  IsWindowVisible: ["bool", ["int"]],
+  GetForegroundWindow: ["long", []],
+  GetCursorPos: ["bool", ["pointer"]],
+  FindWindowW: ["long", ["string"]],
+  GetWindowRect: ["bool", ["long", "void*"]],
+  SendMessageA: ["long", ["long", "uint", "long", "long"]],
+  ShowWindow: ["bool", ["long", "int"]],
+  SetForegroundWindow: ["bool", ["long"]],
+  SetWindowPos: ["bool", ["long", "long", "int", "int", "int", "int", "uint"]],
+  IsZoomed: ["bool", ["long"]],
+  IsIconic: ["bool", ["long"]],
+});
+
+// Function to retrieve titles of all visible windows.
+function getAllTitles() {
+  let titles = [];
+  const enumWindowsCallback = ffi.Callback(
+    "bool",
+    ["long", "long"],
+    function (hWnd, lParam) {
+      if (user32.IsWindowVisible(hWnd)) {
+        titles.push(getWindowName(hWnd));
+      }
+      return true;
+    }
+  );
+  user32.EnumWindows(enumWindowsCallback, 0);
+  return titles;
+}
+
+// Function to retrieve the title of the currently active window.
+function getActiveWindowTitle() {
+  const activeWindow = getActiveWindowHWnd();
+  if (activeWindow === 0) return "No active window";
+  return getWindowName(activeWindow);
+}
+
+//Function to retrieve the position of the cursor.
+function getCursorPosition() {
+  const pointBuffer = Buffer.alloc(8);
+  if (user32.GetCursorPos(pointBuffer)) {
+    const x = pointBuffer.readInt32LE(0);
+    const y = pointBuffer.readInt32LE(4);
+    return { x, y: y };
+  } else {
+    return null;
+  }
+}
+
+// Function to retrieve delails of all visible windows.
+function getAllWindows() {
+  const windows = new Array(); // Use a fixed-size array
+  let index = 0;
+
+  const enumWindowsCallback = ffi.Callback(
+    "bool",
+    ["long", "long"],
+    function (hWnd, lParam) {
+      if (user32.IsWindowVisible(hWnd)) {
+        windows[index++] = new BaseWindow(
+          getWindowName(hWnd),
+          getRect(hWnd),
+          hWnd
+        );
+      }
+      return true;
+    },
+    "stdcall"
+  );
+
+  user32.EnumWindows(enumWindowsCallback, 0);
+  return windows;
+}
+
+// Function to retrieve the details of the currently active window.
+function getActiveWindow() {
+  const activeWindow = getActiveWindowHWnd();
+  if (activeWindow === 0) return "No active window";
+  return new BaseWindow(
+    getWindowName(activeWindow),
+    getRect(activeWindow),
+    activeWindow
+  );
+}
+
+// Function to retrieve the details of the window which are at the given x,y coordinates.
+function getWindowsAt(x, y) {
+  let windowsAtXY = [];
+  for (let window of getAllWindows()) {
+    if (checkIfInBounds(x, y, window.rect)) {
+      windowsAtXY.push(window);
+    }
+  }
+  return windowsAtXY;
+}
+
+// Function to retrieve the details of windows which have the given input as part of their name.
+function getWindowsWithTitle(inputTitle) {
+  let windows = getAllWindows();
+  let windowsWithTitle = [];
+  for (let window of windows) {
+    if (
+      window.title
+        .trim()
+        .toLowerCase()
+        .includes(inputTitle.trim().toLowerCase())
+    ) {
+      windowsWithTitle.push(window);
+    }
+  }
+  return windowsWithTitle;
+}
+
+console.log(getAllTitles());
 /////////////////////HELPER FUNCTIONS////////////////////
 
 // Function to retrieve the title of a window from its handle.
@@ -305,12 +306,25 @@ function getActiveWindowHWnd() {
 }
 
 //exporting the functions
-module.exports = {
-  getAllTitles,
-  getActiveWindowTitle,
-  getCursorPosition,
-  getAllWindows,
-  getActiveWindow,
-  getWindowsAt,
-  getWindowsWithTitle,
-};
+if (process.env.npm_lifecycle_event === "test") {
+  module.exports = {
+    getAllWindows,
+    getAllTitles,
+    getActiveWindowTitle,
+    getCursorPosition,
+    getActiveWindow,
+    getWindowsAt,
+    getWindowsWithTitle,
+    BaseWindow,
+  };
+} else {
+  module.exports = {
+    getAllTitles,
+    getActiveWindowTitle,
+    getCursorPosition,
+    getAllWindows,
+    getActiveWindow,
+    getWindowsAt,
+    getWindowsWithTitle,
+  };
+}
