@@ -1,7 +1,7 @@
 
 # JsGetWindow
 
-A cross platform module to obtain GUI information and controlling application's windows. Based on the pyGetWindow module.
+A cross-platform module designed for retrieving GUI information and managing application windows. Inspired from the pyGetWindow module.
 
 Still under development. Currently only the Windows platform is implemented.
 
