@@ -267,7 +267,6 @@ function getWindowsWithTitle(inputTitle) {
   return windowsWithTitle;
 }
 
-console.log(getAllTitles());
 /////////////////////HELPER FUNCTIONS////////////////////
 
 // Function to retrieve the title of a window from its handle.
