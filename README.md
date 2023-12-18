@@ -9,7 +9,7 @@ Still under development. Currently only the Windows platform is implemented.
 
 ## Installation
 
-Install my-project with npm
+Install jsGetWindow with npm
 
 ```bash
   npm i jsgetwindow
@@ -32,7 +32,7 @@ Install my-project with npm
 
 #### Window Methods: 
 
-```
+```javascript
 const window = getActiveWindow(); //BaseWindow object
 window.close();
 ```
@@ -53,7 +53,7 @@ window.close();
 
 #### Window Properties
 
-```
+```javascript
 const window = getActiveWindow(); //BaseWindow object
 console.log(window.isActive); // true
 ```
@@ -70,7 +70,7 @@ console.log(window.isActive); // true
 
 
 BaseWindow object
-```
+```javascript
 {
 
     title: String,
@@ -86,7 +86,7 @@ BaseWindow object
 ```
 ## Function Example
 
-```
+```javascript
 > const gw = require("jsGetWindow");
 undefined
 
@@ -143,7 +143,7 @@ BaseWindow {
 
 ## Method and Properties Example
 
-```
+```javascript
 > chromeWindow = gw.getWindowsWithTitle("chrome")[0]
 > chromeWindow.isMaximized
 False
